@@ -1,79 +1,149 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{953EB39D-1931-4CA3-A61A-BE9B942C8914}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>UpgradeUrEquipment</RootNamespace>
-    <AssemblyName>UpgradeUrEquipment</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="SandBox">
-      <HintPath>..\..\..\Program Files\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\SandBox\bin\Win64_Shipping_Client\SandBox.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
-    <Reference Include="TaleWorlds.CampaignSystem">
-      <HintPath>..\..\..\Program Files\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\bin\Win64_Shipping_Client\TaleWorlds.CampaignSystem.dll</HintPath>
-    </Reference>
-    <Reference Include="TaleWorlds.CampaignSystem.ViewModelCollection">
-      <HintPath>..\..\..\Program Files\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\bin\Win64_Shipping_Client\TaleWorlds.CampaignSystem.ViewModelCollection.dll</HintPath>
-    </Reference>
-    <Reference Include="TaleWorlds.Core">
-      <HintPath>..\..\..\Program Files\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\bin\Win64_Shipping_Client\TaleWorlds.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="TaleWorlds.Library, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Program Files\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\bin\Win64_Shipping_Client\TaleWorlds.Library.dll</HintPath>
-    </Reference>
-    <Reference Include="TaleWorlds.Localization, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Program Files\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\bin\Win64_Shipping_Client\TaleWorlds.Localization.dll</HintPath>
-    </Reference>
-    <Reference Include="TaleWorlds.MountAndBlade">
-      <HintPath>..\..\..\Program Files\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\bin\Win64_Shipping_Client\TaleWorlds.MountAndBlade.dll</HintPath>
-    </Reference>
-    <Reference Include="TaleWorlds.ObjectSystem, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Program Files\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\bin\Win64_Shipping_Client\TaleWorlds.ObjectSystem.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="BlacksmithWorkingOvertimeBehaviour.cs" />
-    <Compile Include="UpgradeUrEquipmentBehaviour.cs" />
-    <Compile Include="UpgradeUrEquipment.cs" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+<Project Sdk="Microsoft.NET.Sdk">
+    <Import Project="env.xml"/>
+
+    <PropertyGroup>
+        <AssemblyVersion>1.0.0</AssemblyVersion>
+        <FileVersion>1.0.0</FileVersion>
+        <PlatformTarget>x64</PlatformTarget>
+        <LangVersion>10.0</LangVersion>
+        <TargetFramework>net472</TargetFramework>
+        <AfterLoadModule>*UsefulSkips</AfterLoadModule>
+    </PropertyGroup>
+
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+        <Exec Command="powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\PostBuild.ps1 -Name &quot;$(ProjectName)&quot; -Dll &quot;$(TargetPath)&quot; -Pdb &quot;$(TargetDir)$(ProjectName).pdb&quot; -Game &quot;$(GamePath)&quot; -Config $(Configuration)" />
+    </Target>
+
+    <ItemGroup>
+        <Reference Include="TaleWorlds.CampaignSystem">
+            <HintPath>$(GamePath)\bin\Win64_Shipping_Client\TaleWorlds.CampaignSystem.dll</HintPath>
+        </Reference>
+        <Reference Include="TaleWorlds.CampaignSystem.ViewModelCollection">
+            <HintPath>$(GamePath)\bin\Win64_Shipping_Client\TaleWorlds.CampaignSystem.ViewModelCollection.dll</HintPath>
+        </Reference>
+        <Reference Include="TaleWorlds.Core">
+            <HintPath>$(GamePath)\bin\Win64_Shipping_Client\TaleWorlds.Core.dll</HintPath>
+        </Reference>
+        <Reference Include="TaleWorlds.ObjectSystem">
+            <HintPath>$(GamePath)\bin\Win64_Shipping_Client\TaleWorlds.ObjectSystem.dll</HintPath>
+        </Reference>
+        <Reference Include="TaleWorlds.Core.ViewModelCollection">
+            <HintPath>$(GamePath)\bin\Win64_Shipping_Client\TaleWorlds.Core.ViewModelCollection.dll</HintPath>
+        </Reference>
+        <Reference Include="TaleWorlds.Diamond.AccessProvider.Epic">
+            <HintPath>$(GamePath)\bin\Win64_Shipping_Client\TaleWorlds.Diamond.AccessProvider.Epic.dll</HintPath>
+        </Reference>
+        <Reference Include="TaleWorlds.Diamond.AccessProvider.Steam">
+            <HintPath>$(GamePath)\bin\Win64_Shipping_Client\TaleWorlds.Diamond.AccessProvider.Steam.dll</HintPath>
+        </Reference>
+        <Reference Include="TaleWorlds.Diamond.AccessProvider.Test">
+            <HintPath>$(GamePath)\bin\Win64_Shipping_Client\TaleWorlds.Diamond.AccessProvider.Test.dll</HintPath>
+        </Reference>
+        <Reference Include="TaleWorlds.Diamond">
+            <HintPath>$(GamePath)\bin\Win64_Shipping_Client\TaleWorlds.Diamond.dll</HintPath>
+        </Reference>
+        <Reference Include="TaleWorlds.DotNet.AutoGenerated">
+            <HintPath>$(GamePath)\bin\Win64_Shipping_Client\TaleWorlds.DotNet.AutoGenerated.dll</HintPath>
+        </Reference>
+        <Reference Include="TaleWorlds.DotNet">
+            <HintPath>$(GamePath)\bin\Win64_Shipping_Client\TaleWorlds.DotNet.dll</HintPath>
+        </Reference>
+        <Reference Include="TaleWorlds.Engine.AutoGenerated">
+            <HintPath>$(GamePath)\bin\Win64_Shipping_Client\TaleWorlds.Engine.AutoGenerated.dll</HintPath>
+        </Reference>
+        <Reference Include="TaleWorlds.Engine">
+            <HintPath>$(GamePath)\bin\Win64_Shipping_Client\TaleWorlds.Engine.dll</HintPath>
+        </Reference>
+        <Reference Include="TaleWorlds.Engine.GauntletUI">
+            <HintPath>$(GamePath)\bin\Win64_Shipping_Client\TaleWorlds.Engine.GauntletUI.dll</HintPath>
+        </Reference>
+        <Reference Include="TaleWorlds.GauntletUI.Data">
+            <HintPath>$(GamePath)\bin\Win64_Shipping_Client\TaleWorlds.GauntletUI.Data.dll</HintPath>
+        </Reference>
+        <Reference Include="TaleWorlds.GauntletUI">
+            <HintPath>$(GamePath)\bin\Win64_Shipping_Client\TaleWorlds.GauntletUI.dll</HintPath>
+        </Reference>
+        <Reference Include="TaleWorlds.GauntletUI.ExtraWidgets">
+            <HintPath>$(GamePath)\bin\Win64_Shipping_Client\TaleWorlds.GauntletUI.ExtraWidgets.dll</HintPath>
+        </Reference>
+        <Reference Include="TaleWorlds.GauntletUI.PrefabSystem">
+            <HintPath>$(GamePath)\bin\Win64_Shipping_Client\TaleWorlds.GauntletUI.PrefabSystem.dll</HintPath>
+        </Reference>
+        <Reference Include="TaleWorlds.GauntletUI.TooltipExtensions">
+            <HintPath>$(GamePath)\bin\Win64_Shipping_Client\TaleWorlds.GauntletUI.TooltipExtensions.dll</HintPath>
+        </Reference>
+        <Reference Include="TaleWorlds.InputSystem">
+            <HintPath>$(GamePath)\bin\Win64_Shipping_Client\TaleWorlds.InputSystem.dll</HintPath>
+        </Reference>
+        <Reference Include="TaleWorlds.Library">
+            <HintPath>$(GamePath)\bin\Win64_Shipping_Client\TaleWorlds.Library.dll</HintPath>
+        </Reference>
+        <Reference Include="TaleWorlds.Localization">
+            <HintPath>$(GamePath)\bin\Win64_Shipping_Client\TaleWorlds.Localization.dll</HintPath>
+        </Reference>
+        <Reference Include="TaleWorlds.MountAndBlade.AutoGenerated">
+            <HintPath>$(GamePath)\bin\Win64_Shipping_Client\TaleWorlds.MountAndBlade.AutoGenerated.dll</HintPath>
+        </Reference>
+        <Reference Include="TaleWorlds.MountAndBlade.Diamond">
+            <HintPath>$(GamePath)\bin\Win64_Shipping_Client\TaleWorlds.MountAndBlade.Diamond.dll</HintPath>
+        </Reference>
+        <Reference Include="TaleWorlds.MountAndBlade">
+            <HintPath>$(GamePath)\bin\Win64_Shipping_Client\TaleWorlds.MountAndBlade.dll</HintPath>
+        </Reference>
+        <Reference Include="TaleWorlds.MountAndBlade.GauntletUI.Widgets">
+            <HintPath>$(GamePath)\bin\Win64_Shipping_Client\TaleWorlds.MountAndBlade.GauntletUI.Widgets.dll</HintPath>
+        </Reference>
+        <Reference Include="TaleWorlds.MountAndBlade.Helpers">
+            <HintPath>$(GamePath)\bin\Win64_Shipping_Client\TaleWorlds.MountAndBlade.Helpers.dll</HintPath>
+        </Reference>
+        <Reference Include="TaleWorlds.MountAndBlade.ViewModelCollection">
+            <HintPath>$(GamePath)\bin\Win64_Shipping_Client\TaleWorlds.MountAndBlade.ViewModelCollection.dll</HintPath>
+        </Reference>
+        <Reference Include="TaleWorlds.NavigationSystem">
+            <HintPath>$(GamePath)\bin\Win64_Shipping_Client\TaleWorlds.NavigationSystem.dll</HintPath>
+        </Reference>
+        <Reference Include="TaleWorlds.Network">
+            <HintPath>$(GamePath)\bin\Win64_Shipping_Client\TaleWorlds.Network.dll</HintPath>
+        </Reference>
+        <Reference Include="TaleWorlds.PlatformService">
+            <HintPath>$(GamePath)\bin\Win64_Shipping_Client\TaleWorlds.PlatformService.dll</HintPath>
+        </Reference>
+        <Reference Include="TaleWorlds.PlatformService.Epic">
+            <HintPath>$(GamePath)\bin\Win64_Shipping_Client\TaleWorlds.PlatformService.Epic.dll</HintPath>
+        </Reference>
+        <Reference Include="TaleWorlds.PlatformService.Steam">
+            <HintPath>$(GamePath)\bin\Win64_Shipping_Client\TaleWorlds.PlatformService.Steam.dll</HintPath>
+        </Reference>
+        <Reference Include="TaleWorlds.PlayerServices">
+            <HintPath>$(GamePath)\bin\Win64_Shipping_Client\TaleWorlds.PlayerServices.dll</HintPath>
+        </Reference>
+        <Reference Include="TaleWorlds.PSAI">
+            <HintPath>$(GamePath)\bin\Win64_Shipping_Client\TaleWorlds.PSAI.dll</HintPath>
+        </Reference>
+        <Reference Include="TaleWorlds.SaveSystem">
+            <HintPath>$(GamePath)\bin\Win64_Shipping_Client\TaleWorlds.SaveSystem.dll</HintPath>
+        </Reference>
+        <Reference Include="TaleWorlds.Starter.Library">
+            <HintPath>$(GamePath)\bin\Win64_Shipping_Client\TaleWorlds.Starter.Library.dll</HintPath>
+        </Reference>
+        <Reference Include="TaleWorlds.TwoDimension">
+            <HintPath>$(GamePath)\bin\Win64_Shipping_Client\TaleWorlds.TwoDimension.dll</HintPath>
+        </Reference>
+        <Reference Include="TaleWorlds.TwoDimension.Standalone">
+            <HintPath>$(GamePath)\bin\Win64_Shipping_Client\TaleWorlds.TwoDimension.Standalone.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Nullable" Version="1.3.1" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive"/>
+        <PackageReference Include="IsExternalInit" Version="1.0.3" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive"/>
+        <PackageReference Include="Bannerlord.BuildResources" Version="1.1.0.104" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive"/>
+        <PackageReference Include="Bannerlord.Lib.Harmony" Version="2.2.2" IncludeAssets="compile"/>
+        <PackageReference Include="Harmony.Extensions" Version="3.2.0.77" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive"/>
+        <PackageReference Include="BUTR.Harmony.Analyzer" Version="1.0.1.50" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive"/>
+        <PackageReference Include="Bannerlord.UIExtenderEx" Version="2.8.0" IncludeAssets="compile"/>
+        <PackageReference Include="Bannerlord.ButterLib" Version="2.8.11" IncludeAssets="compile"/>
+        <PackageReference Include="Bannerlord.MCM" Version="5.9.1" IncludeAssets="compile"/>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" PrivateAssets="all" IncludeAssets="compile"/>
+    </ItemGroup>
 </Project>
